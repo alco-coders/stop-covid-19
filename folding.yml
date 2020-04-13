@@ -1,0 +1,193 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Folding@Home
+Metadata: 
+  AWS::CloudFormation::Interface: 
+    ParameterGroups: 
+      - 
+        Label: 
+          default: "AWS Resources Configuration"
+        Parameters: 
+          - InstanceType
+      - 
+        Label: 
+          default: "Folding@Home project"
+        Parameters: 
+          - FoldingTeam
+          - FoldingUser
+    ParameterLabels: 
+      FoldingTeam: 
+        default: "Which team are you member of?"
+      FoldingUser:
+        default: "What is your username?"
+      InstanceType:
+        default: "Instance type to run"
+
+Parameters:
+  InstanceType:
+    Type: String
+    Default: g4dn.xlarge
+    AllowedValues:
+      - g4dn.xlarge
+      - g3s.xlarge
+  FoldingUser:
+    Type: String
+    Default: anonymous
+  FoldingTeam:
+    Type: Number
+    Default: 2164
+    
+
+Mappings:
+  ImagesToRegionMap:
+    ap-northeast-1:
+      HVM64: ami-0f281e05283bd0b52
+    ap-northeast-2:
+      HVM64: ami-0c7979430705b98a2
+    ap-south-1:
+      HVM64: ami-08804058ce83e33d8
+    ap-southeast-1:
+      HVM64: ami-0131cfff5655522af
+    ap-southeast-2:
+      HVM64: ami-0f86cfc4495d1ef9f
+    ca-central-1:
+      HVM64: ami-069916fe4d52f0cd7
+    eu-central-1:
+      HVM64: ami-0e29cd2e136f11293
+    eu-west-1:
+      HVM64: ami-0d1719cfc8e2f69b4
+    eu-west-2:
+      HVM64: ami-0171cb020b9c7108b
+    eu-west-3:
+      HVM64: ami-0aa42149b97f9c97e
+    sa-east-1:
+      HVM64: ami-04eb6cc47d0c93be8
+    us-east-1:
+      HVM64: ami-03d7bb62671766e1e
+    us-east-2:
+      HVM64: ami-0c6bb3d47bb198095
+    us-west-1:
+      HVM64: ami-0b87e1ab3d1087b47
+    us-west-2:
+      HVM64: ami-0ea3e3316596177cc
+
+Resources:
+  IAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: String
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      Tags:
+        - Key: Project
+          Value: Folding@Home
+
+  IamInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles: 
+        - !Ref IAMRole
+      
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http to the worker node
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      Tags: 
+        - Key: Project
+          Value: Folding@Home
+
+  LaunchTemplate:
+    Type: "AWS::EC2::LaunchTemplate"
+    Metadata:
+      AWS::CloudFormation::Init:
+        configSets:
+          InstallAndRun:
+            - "Configure"
+            - "Install"
+        Install:
+          packages:
+            rpm:
+              fahclient: "https://download.foldingathome.org/releases/public/release/fahclient/centos-6.7-64bit/v7.5/latest.rpm"
+        Configure:
+          commands: 
+              mkdir: 
+                command: "mkdir -p /etc/fahclient"
+          files:
+            /etc/fahclient/config.xml:
+              content: !Sub 
+                  <config>
+                     <!-- HTTP Server -->
+                     <allow v='127.0.0.1'/>
+
+                     <!-- Slot Control -->
+                     <power v='FULL'/>
+
+                     <!-- User Information -->
+                     <user v='${FoldingUser}'/>
+                     <team v='${FoldingTeam}'/>
+
+                     <!-- Web Server -->
+                     <web-allow v='127.0.0.1'/>
+
+                     <!-- Folding Slots -->
+                     <slot id='0' type='CPU'/>
+                     <slot id='1' type='GPU'/>
+                   </config>
+              mode: "000644"
+              owner: "root"
+              group: "root"
+    Properties:
+      LaunchTemplateName: FoldingAtHome
+      LaunchTemplateData:
+        IamInstanceProfile:
+          Name: !Ref IamInstanceProfile
+        ImageId: !FindInMap [ImagesToRegionMap, !Ref "AWS::Region", HVM64]
+        InstanceType: !Ref InstanceType
+        InstanceMarketOptions:
+          MarketType: spot
+        SecurityGroupIds:
+          - !GetAtt SecurityGroup.GroupId
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash -xe
+            # Install the files and packages from the metadata
+            /opt/aws/bin/cfn-init -v \
+              --stack ${AWS::StackName} \
+              --resource LaunchTemplate --configsets InstallAndRun \
+              --region ${AWS::Region}
+
+  AutoScalingGroup:
+    UpdatePolicy:
+      AutoScalingReplacingUpdate:
+        WillReplace: true
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AvailabilityZones: !GetAZs
+      DesiredCapacity: 1
+      LaunchTemplate:
+        LaunchTemplateId:
+          Ref: LaunchTemplate
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber
+      MaxSize: 1
+      MinSize: 0
+      Tags:
+        - Key: Project
+          Value: Folding@Home
+          PropagateAtLaunch: true
+        - Key: Name
+          Value: FoldingAtHome
+          PropagateAtLaunch: true
+
