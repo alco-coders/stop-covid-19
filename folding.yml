@@ -129,6 +129,9 @@ Resources:
             /etc/fahclient/config.xml:
               content: !Sub 
                   <config>
+                     <!-- Preferred disease research -->
+                     <cause v='COVID_19'/>
+
                      <!-- HTTP Server -->
                      <allow v='127.0.0.1'/>
 
