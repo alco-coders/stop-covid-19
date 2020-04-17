@@ -120,7 +120,7 @@ Resources:
         Install:
           packages:
             rpm:
-              fahclient: "https://download.foldingathome.org/releases/public/release/fahclient/centos-6.7-64bit/v7.5/latest.rpm"
+              fahclient: "https://download.foldingathome.org/releases/public/release/fahclient/centos-6.7-64bit/v7.6/latest.rpm"
         Configure:
           commands: 
               mkdir: 
