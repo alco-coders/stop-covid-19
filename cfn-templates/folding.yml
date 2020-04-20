@@ -12,13 +12,16 @@ Metadata:
         Label: 
           default: "Folding@Home project"
         Parameters: 
-          - FoldingTeam
           - FoldingUser
-    ParameterLabels: 
-      FoldingTeam: 
-        default: "Which team are you member of?"
+          - FoldingPasskey
+          - FoldingTeam
+    ParameterLabels:
       FoldingUser:
-        default: "What is your username?"
+        default: "[Optional] Username for your contributions (allowed characters: letters, numbers and underscore '_')"
+      FoldingPasskey:
+        default: "[Required if you set Username above] Passkey for your username (get it here - https://apps.foldingathome.org/getpasskey)" 
+      FoldingTeam: 
+        default: "[Optional] Team ID: pick from the list (https://stats.foldingathome.org/teams, e.g. "Ukraine" team ID is 2164) of create your own team (https://apps.foldingathome.org/team)"
       InstanceType:
         default: "Instance type to run"
 
@@ -31,11 +34,14 @@ Parameters:
       - g3s.xlarge
   FoldingUser:
     Type: String
-    Default: anonymous
+    Default: "Anonymous"
+  FoldingPasskey:
+    Type: String
+    Default: ""
+    NoEcho: true
   FoldingTeam:
     Type: Number
-    Default: 2164
-    
+    Default: 0
 
 Mappings:
   ImagesToRegionMap:
@@ -140,6 +146,7 @@ Resources:
 
                      <!-- User Information -->
                      <user v='${FoldingUser}'/>
+                     <passkey v='${FoldingPasskey}'/>
                      <team v='${FoldingTeam}'/>
 
                      <!-- Web Server -->
