@@ -28,7 +28,6 @@ Metadata:
 Parameters:
   InstanceType:
     Type: String
-    Default: ""
     AllowedValues:
       - c5.large
       - c5.xlarge
