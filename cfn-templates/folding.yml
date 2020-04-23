@@ -21,7 +21,7 @@ Metadata:
       FoldingPasskey:
         default: "[Required if you set Username above] Passkey for your username (get it here - https://apps.foldingathome.org/getpasskey)" 
       FoldingTeam: 
-        default: "[Optional] Team ID: pick from the list (https://stats.foldingathome.org/teams, e.g. "Ukraine" team ID is 2164) of create your own team (https://apps.foldingathome.org/team)"
+        default: "[Optional] Team ID: pick from the list (https://stats.foldingathome.org/teams, e.g. 'Ukraine' team ID is 2164) of create your own team (https://apps.foldingathome.org/team)"
       InstanceType:
         default: "Instance type to run"
 
