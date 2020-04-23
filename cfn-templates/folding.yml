@@ -28,10 +28,12 @@ Metadata:
 Parameters:
   InstanceType:
     Type: String
-    Default: g4dn.xlarge
     AllowedValues:
+      - c5.large
+      - c5.xlarge
+      - c5.2xlarge
       - g4dn.xlarge
-      - g3s.xlarge
+      - g4dn.2xlarge
   FoldingUser:
     Type: String
     Default: "Anonymous"
