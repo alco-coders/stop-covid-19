@@ -49,35 +49,35 @@ Parameters:
 Mappings:
   ImagesToRegionMap:
     ap-northeast-1:
-      HVM64: ami-0f281e05283bd0b52
+      HVM64: ami-09c0c16fc46a29ed9
     ap-northeast-2:
-      HVM64: ami-0c7979430705b98a2
+      HVM64: ami-034ed9c75bff01166
     ap-south-1:
-      HVM64: ami-08804058ce83e33d8
+      HVM64: ami-072992e3a0b57c777
     ap-southeast-1:
-      HVM64: ami-0131cfff5655522af
+      HVM64: ami-04f2719aea9710d47
     ap-southeast-2:
-      HVM64: ami-0f86cfc4495d1ef9f
+      HVM64: ami-0347c3b4134acc4a1
     ca-central-1:
-      HVM64: ami-069916fe4d52f0cd7
+      HVM64: ami-0644f010d37d638eb
     eu-central-1:
-      HVM64: ami-0e29cd2e136f11293
+      HVM64: ami-0c1485978e756d31f
     eu-west-1:
-      HVM64: ami-0d1719cfc8e2f69b4
+      HVM64: ami-078c3ac22c6019640
     eu-west-2:
-      HVM64: ami-0171cb020b9c7108b
+      HVM64: ami-0b14f7f8838d3469d
     eu-west-3:
-      HVM64: ami-0aa42149b97f9c97e
+      HVM64: ami-0de4c0ceb16714a07
     sa-east-1:
-      HVM64: ami-04eb6cc47d0c93be8
+      HVM64: ami-01b1c089e7c279034
     us-east-1:
-      HVM64: ami-03d7bb62671766e1e
+      HVM64: ami-0b0b075706e19de29
     us-east-2:
-      HVM64: ami-0c6bb3d47bb198095
+      HVM64: ami-0f3c887052a4defe9
     us-west-1:
-      HVM64: ami-0b87e1ab3d1087b47
+      HVM64: ami-08f684ec10115acdf
     us-west-2:
-      HVM64: ami-0ea3e3316596177cc
+      HVM64: ami-03a2978660a16f580
 
 Resources:
   IAMRole:
